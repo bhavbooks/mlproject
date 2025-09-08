@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Performance Predictor | ML Project</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      /* Hero Section */
+      .hero {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        color: white;
+        text-align: center;
+        padding: 0 20px;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+        animation: float 20s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translate(0px, 0px);
+        }
+        50% {
+          transform: translate(-30px, -30px);
+        }
+      }
+
+      .hero-content {
+        max-width: 800px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        animation: slideInUp 1s ease;
+      }
+
+      .hero .subtitle {
+        font-size: 1.3rem;
+        margin-bottom: 30px;
+        opacity: 0.9;
+        animation: slideInUp 1s ease 0.2s both;
+      }
+
+      .hero .description {
+        font-size: 1.1rem;
+        margin-bottom: 40px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        animation: slideInUp 1s ease 0.4s both;
+      }
+
+      @keyframes slideInUp {
+        from {
+          opacity: 0;
+          transform: translateY(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .cta-button {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 18px 40px;
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        animation: slideInUp 1s ease 0.6s both;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .cta-button:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Navigation */
+      .nav {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+        padding: 15px 0;
+        transition: all 0.3s ease;
+        transform: translateY(-100%);
+      }
+
+      .nav.visible {
+        transform: translateY(0);
+      }
+
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .nav-logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #667eea;
+      }
+
+      .nav-links {
+        display: flex;
+        list-style: none;
+        gap: 30px;
+      }
+
+      .nav-links a {
+        text-decoration: none;
+        color: #2c3e50;
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .nav-links a:hover {
+        color: #667eea;
+      }
+
+      /* About Section */
+      .about {
+        padding: 100px 20px;
+        background: #f8fafc;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        color: #2c3e50;
+        margin-bottom: 20px;
+      }
+
+      .section-subtitle {
+        text-align: center;
+        font-size: 1.2rem;
+        color: #64748b;
+        margin-bottom: 60px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .about-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 60px;
+        align-items: center;
+        margin-bottom: 60px;
+      }
+
+      .about-image {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+        color: white;
+        box-shadow: 0 20px 40px rgba(79, 172, 254, 0.3);
+      }
+
+      .about-image .icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+      }
+
+      .about-image h3 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+      }
+
+      .about-content h2 {
+        font-size: 2rem;
+        color: #2c3e50;
+        margin-bottom: 20px;
+      }
+
+      .about-content p {
+        color: #64748b;
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+      }
+
+      .highlight {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 700;
+      }
+
+      /* Features Section */
+      .features {
+        padding: 100px 20px;
+        background: white;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 40px;
+        margin-top: 60px;
+      }
+
+      .feature-card {
+        background: #f8fafc;
+        padding: 40px 30px;
+        border-radius: 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-10px);
+        background: white;
+        border-color: #e2e8f0;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+      }
+
+      .feature-card h3 {
+        font-size: 1.5rem;
+        color: #2c3e50;
+        margin-bottom: 15px;
+      }
+
+      .feature-card p {
+        color: #64748b;
+        line-height: 1.6;
+      }
+
+      /* Tech Stack */
+      .tech {
+        padding: 100px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .tech-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 30px;
+        margin-top: 60px;
+      }
+
+      .tech-item {
+        text-align: center;
+        padding: 30px 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+      }
+
+      .tech-item:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-5px);
+      }
+
+      .tech-item .icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+      }
+
+      /* CTA Section */
+      .cta-section {
+        padding: 100px 20px;
+        background: #2c3e50;
+        color: white;
+        text-align: center;
+      }
+
+      .cta-section h2 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+      }
+
+      .cta-section p {
+        font-size: 1.2rem;
+        margin-bottom: 40px;
+        opacity: 0.9;
+      }
+
+      .cta-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 18px 35px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+      }
+
+      .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Footer */
+      .footer {
+        padding: 40px 20px;
+        background: #1a202c;
+        color: white;
+        text-align: center;
+      }
+
+      .footer p {
+        margin-bottom: 10px;
+      }
+
+      .footer a {
+        color: #4facfe;
+        text-decoration: none;
+      }
+
+      .footer a:hover {
+        text-decoration: underline;
+      }
+
+      /* Mobile Responsive */
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 2.5rem;
+        }
+
+        .hero .subtitle {
+          font-size: 1.1rem;
+        }
+
+        .about-grid {
+          grid-template-columns: 1fr;
+          text-align: center;
+        }
+
+        .nav-links {
+          display: none;
+        }
+
+        .cta-buttons {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .section-title {
+          font-size: 2rem;
+        }
+      }
+
+      .scroll-indicator {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        animation: bounce 2s infinite;
+      }
+
+      @keyframes bounce {
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
+          transform: translateX(-50%) translateY(0);
+        }
+        40% {
+          transform: translateX(-50%) translateY(-10px);
+        }
+        60% {
+          transform: translateX(-50%) translateY(-5px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="nav" id="navbar">
+      <div class="nav-container">
+        <div class="nav-logo">📊 ML Predictor</div>
+        <ul class="nav-links">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#tech">Tech Stack</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+      <div class="hero-content">
+        <h1>🎓 Student Performance Predictor</h1>
+        <p class="subtitle">Machine Learning Meets Educational Analytics</p>
+        <p class="description">
+          Hi guys,I am Bhavesh, a third-year economics major at the University
+          of Delhi. For the past few months, I've been aggressively trying to
+          implement various econometric learnings on a practical dataset. This
+          project is an extensive part of that journey.
+        </p>
+        <a href="#predict" class="cta-button">🚀 Try the Predictor</a>
+      </div>
+      <div class="scroll-indicator">
+        <div style="font-size: 2rem">⬇️</div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+      <div class="container">
+        <h2 class="section-title">About This Project</h2>
+        <p class="section-subtitle">
+          Converting Statistical Coursework into Practical Predictive Models
+        </p>
+
+        <div class="about-grid">
+          <div class="about-image">
+            <div class="icon">🎯</div>
+            <h3>Academic Excellence</h3>
+            <p>University of Delhi<br />Economics Major</p>
+          </div>
+          <div class="about-content">
+            <h2>From Theory to <span class="highlight">Practice</span></h2>
+            <p>
+              As a third-year economics student, I've been fascinated by the
+              intersection of econometric theory and real-world data analysis.
+              This project represents months of dedicated learning and
+              implementation.
+            </p>
+            <p>
+              The Student Performance Predictor uses advanced ML / Statistical
+              Models to analyze multiple factors affecting academic performance,
+              providing insights that can help Educators and Students optimize
+              learning outcomes.
+            </p>
+            <p>
+              This isn't just an undergrad statistical project, – it's a
+              practical tool that showcase how economic principles and
+              statistical methods can be applied in practical applications.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+      <div class="container">
+        <h2 class="section-title">Key Features</h2>
+        <p class="section-subtitle">What makes this predictor special</p>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🧠</div>
+            <h3>Advanced ML Algorithms</h3>
+            <p>
+              Utilizes Linear Regression and other Machine Learning models
+              trained on comprehensive student data to provide accurate
+              predictions.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Multi-Factor Analysis</h3>
+            <p>
+              Analyzes student background, family income factors, and test
+              scores to predict math performance.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Real-Time Predictions</h3>
+            <p>
+              Get instant math score predictions based on reading, writing
+              scores and personal characteristics.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>Responsive Design</h3>
+            <p>
+              Works seamlessly across all devices with a modern, intuitive UI.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🔬</div>
+            <h3>Econometric Foundation</h3>
+            <p>
+              Built on solid economic principles and statistical methodologies
+              learned in academic coursework.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>High Accuracy</h3>
+            <p>
+              Trained and validated on extensive datasets to ensure reliable and
+              meaningful predictions.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section class="tech" id="tech">
+      <div class="container">
+        <h2 class="section-title">Technology Stack</h2>
+        <p class="section-subtitle" style="color: rgba(255, 255, 255, 0.9)">
+          Built with modern tools and frameworks
+        </p>
+        <div class="tech-grid">
+          <div class="tech-item">
+            <div class="icon">🐍</div>
+            <h4>Python</h4>
+          </div>
+          <div class="tech-item">
+            <div class="icon">🤖</div>
+            <h4>Scikit-learn</h4>
+          </div>
+          <div class="tech-item">
+            <div class="icon">🌐</div>
+            <h4>Flask</h4>
+          </div>
+          <div class="tech-item">
+            <div class="icon">🐼</div>
+            <h4>Pandas</h4>
+          </div>
+          <div class="tech-item">
+            <div class="icon">📊</div>
+            <h4>NumPy</h4>
+          </div>
+          <div class="tech-item">
+            <div class="icon">🎨</div>
+
+            <h4>Matplotlib</h4>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="predict">
+      <div class="container">
+        <h2>Ready to Test the Predictor?</h2>
+        <p>Experience the power of machine learning in educational analytics</p>
+        <div class="cta-buttons">
+          <a href="/predict" class="btn btn-primary">🔮 Try Predictor</a>
+          <a
+            href="https://github.com/bhavbooks/mlproject"
+            class="btn btn-secondary"
+            target="_blank"
+            >📚 View Code</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <p>
+          Built with ❤️ by
+          <a
+            href="https://linkedin.com/in/bhavv77"
+            target="_blank"
+            title="Connect with me on LinkedIn"
+            >Bhavesh</a
+          >, University of Delhi
+        </p>
+        <p>
+          <a href="https://github.com/bhavbooks/mlproject" target="_blank"
+            >GitHub Repository</a
+          >
+          |
+          <a href="#about">About Project</a>
+        </p>
+        <p>&copy; 2024 Student Performance Predictor. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      // Navbar scroll effect
+      window.addEventListener("scroll", function () {
+        const navbar = document.getElementById("navbar");
+        if (window.scrollY > 100) {
+          navbar.classList.add("visible");
+        } else {
+          navbar.classList.remove("visible");
+        }
+      });
+
+      // Smooth scrolling for navigation links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        });
+      });
+
+      // Add animation on scroll
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
+      };
+
+      const observer = new IntersectionObserver(function (entries) {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = "1";
+            entry.target.style.transform = "translateY(0)";
+          }
+        });
+      }, observerOptions);
+
+      // Observe elements for animation
+      document.querySelectorAll(".feature-card, .tech-item").forEach((el) => {
+        el.style.opacity = "0";
+        el.style.transform = "translateY(20px)";
+        el.style.transition = "opacity 0.6s ease, transform 0.6s ease";
+        observer.observe(el);
+      });
+    </script>
+  </body>
+</html>
