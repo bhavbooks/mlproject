@@ -62,7 +62,7 @@ def predict_datapoint():
             print("ERROR:", str(e))
             import traceback
             traceback.print_exc()
-            return render_template('home.html', results=results[0])
+            return render_template('home.html', results="Error in Prediction")
         
 if __name__ == "__main__":
     app.run(host='0.0.0.0') ## debug =True is not needed in deployment part
