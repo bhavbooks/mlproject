@@ -53,7 +53,7 @@ Experience the predictor in action with our deployed version on Render. Simply i
 ### Backend
 
 - **Machine Learning**: Scikit-learn, Pandas, NumPy
-- **Web Framework**: Flask/Streamlit (specify based on your implementation)
+- **Web Framework**: Flask
 - **Data Processing**: Python ecosystem
 
 ### Frontend
